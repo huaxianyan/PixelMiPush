@@ -22,7 +22,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "MIPush"
+rootProject.name = "Pixel-MiPush"
 include ':app'
 include ':xposed'
 include ':common'

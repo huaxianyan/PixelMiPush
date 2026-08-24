@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">MIPush</string>
     <string name="xposedDescription">让 MiPush 以应用身份发送通知、伪装小米设备</string>
     <string name="hms_core_not_found">HMS Core 未安装或没有权限访问</string>
     <string name="hms_not_activated">HMSPush 模块未激活或需要重启 HMS Core</string>

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MIPush</string>
+    <string name="app_name">Pixel MiPush</string>
     <string name="xposedDescription">Let MiPush notifications send as target application, Fake XiaoMi device</string>
     <string name="hms_core_not_found">HMS Core is not installed or has no permission to access</string>
     <string name="hms_not_activated">HMSPush module not activated or HMS Core needs a reboot</string>
