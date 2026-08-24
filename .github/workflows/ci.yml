@@ -140,6 +140,7 @@ jobs:
             exit 1
           fi
           grep -Fq "package: name='$expected_package'" <<<"$badging"
+          grep -Fq "application-label:'Pixel MiPush'" <<<"$badging"
           manifest_tree="$("$ANDROID_HOME/build-tools/34.0.0/aapt" \
             dump xmltree "$apk" AndroidManifest.xml)"
           if grep -Eq 'xposedmodule|xposedminversion|xposedscope' <<<"$manifest_tree"; then
@@ -169,7 +170,7 @@ jobs:
       - name: Name artifact
         id: artifact
         shell: bash
-        run: echo "name=MiPush-${GITHUB_SHA::7}-release" >> "$GITHUB_OUTPUT"
+        run: echo "name=Pixel-MiPush-${GITHUB_SHA::7}-release" >> "$GITHUB_OUTPUT"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

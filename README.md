@@ -2,10 +2,11 @@
 
 PixelMiPush 是 [NihilityT/MiPush](https://github.com/NihilityT/MiPush) 的派生项目，需要配合 [MiPushFramework](https://github.com/NihilityT/MiPushFramework) 使用。项目基于 Xposed API 102，为非 MIUI 设备提供目标应用环境伪装和跨包通知发布能力，并针对 Pixel Android 16 的 QQ 会话通知进行适配。
 
-当前 Pixel 版包名：
+当前 Pixel 版身份：
 
 ```text
-com.neko7ina.mipush.pixel
+应用名称：Pixel MiPush
+包名：com.neko7ina.mipush.pixel
 ```
 
 ## 主要功能
