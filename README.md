@@ -77,11 +77,11 @@ QQ 在 Pixel 上推荐启用：
 - 模块不会替代 MiPushFramework，也不负责决定 QQ 服务端何时切换到厂商推送。
 - 并非所有应用都提供可用的 MiPush 注册和离线推送能力。
 - MiPushFramework、XMSF 和 LSPosed 不应被后台管理工具冻结或限制网络。
-- Pixel 专用源码位于 `modern-api-102-pixel-android16` 分支；`master` 保留 API 102 通用实现。
+- `master` 是唯一开发主线，仅维护 Pixel 版。通用版和 Legacy 版不再保留开发分支，历史源码通过 `archive/*` 标签及原有 Release 标签查阅。
 
 ## 构建
 
-仓库使用 GitHub Actions、JDK 17 和 Android SDK 34 构建 APK。进入 **Actions → Build installable APK → Run workflow**，选择 Pixel 分支并按需填写 `version_name` 和 `version_code`。
+仓库使用 GitHub Actions、JDK 17 和 Android SDK 34 构建 APK。进入 **Actions → Build installable APK → Run workflow**，选择 `master` 分支并按需填写 `version_name` 和 `version_code`。
 
 未配置签名 Secrets 时，工作流使用临时 Debug 签名，不能覆盖正式 Release。正式 Release 使用长期签名，并由 CI 校验包名、Xposed API 102 声明、APK 签名以及 DEX 中不存在 Legacy Xposed API 依赖。
 
