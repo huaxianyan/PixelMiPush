@@ -1,6 +1,6 @@
 # PixelMiPush
 
-PixelMiPush 是 [NihilityT/MiPush](https://github.com/NihilityT/MiPush) 的派生项目，需要配合 [MiPushFramework](https://github.com/NihilityT/MiPushFramework) 使用。项目基于 Xposed API 102，为非 MIUI 设备提供目标应用环境伪装和跨包通知发布能力，并针对 Pixel Android 16 的 QQ 会话通知进行适配。
+PixelMiPush 是 [NihilityT/MiPush](https://github.com/NihilityT/MiPush) 的派生项目，需要配合我们维护的 [PixelMiPushFramework](https://github.com/huaxianyan/PixelMiPushFramework) 使用。项目基于 Xposed API 102，为非 MIUI 设备提供目标应用环境伪装和跨包通知发布能力，并针对 Pixel Android 16 的 QQ 会话通知进行适配。
 
 当前 Pixel 版身份：
 
@@ -12,25 +12,25 @@ PixelMiPush 是 [NihilityT/MiPush](https://github.com/NihilityT/MiPush) 的派�
 ## 主要功能
 
 - 使用 Xposed API 102，不依赖 `de.robv.android.xposed` Legacy API
-- 为 MiPushFramework 提供以目标应用身份发布通知的能力
+- 为 PixelMiPushFramework 提供以目标应用身份发布通知的能力
 - 在 Android 16 限制反射写入 `Build.*` 时，继续提供 `SystemProperties` Hook 和 `Unsafe` 后备写入
 - 适配 Pixel Android 16 的 QQ MessagingStyle 会话通知
 - 保留联系人头像、群头像、`Person.icon` 和 `android.largeIcon`
-- 使用 MiPushFramework 提供的单色 `smallIcon` 作为会话头像右下角角标和顶层汇总图标
+- 使用 PixelMiPushFramework 提供的单色 `smallIcon` 作为会话头像右下角角标和顶层汇总图标
 - 将 Android 16 的 40 dp 会话头像恢复为 48 dp，并使用 20 dp 角标和 4 dp 角标内边距
 - 修复 QQ 顶层汇总通知重复显示「QQ」的问题，不修改普通子通知的副标题
 - 仅处理 `packageName=com.tencent.mobileqq` 且 `tag=mipush_com.tencent.mobileqq` 的通知；接口不匹配时安全跳过
 
-Pixel 版不包含 MIUI/HyperOS SystemUI 插件代码，也不会内置、替换或自动启用 QQ fallback 图标。通知使用的 `smallIcon` 始终由 MiPushFramework 提供。
+Pixel 版不包含 MIUI/HyperOS SystemUI 插件代码，也不会内置、替换或自动启用 QQ fallback 图标。通知使用的 `smallIcon` 始终由 PixelMiPushFramework 提供。
 
 ## 环境要求
 
 - Pixel Android 16
 - 支持 Xposed API 102 的 LSPosed
-- 已完成初始化的 MiPushFramework
+- 已完成初始化的 PixelMiPushFramework
 - Root 环境
 
-当前版本已在以下环境完成验证：
+以下为历史版本使用原版 MiPushFramework 时的验证环境，不代表当前发布包的验收结果：
 
 ```text
 Pixel 10 Pro
@@ -42,7 +42,7 @@ MiPushFramework 0.3.11
 
 ## 安装
 
-1. 安装并初始化 [MiPushFramework](https://github.com/NihilityT/MiPushFramework/releases/latest)。
+1. 安装并初始化 [PixelMiPushFramework](https://github.com/huaxianyan/PixelMiPushFramework/releases/latest)，通常选择 `normal` 版本。
 2. 从 [Releases](https://github.com/huaxianyan/PixelMiPush/releases/latest) 下载最新的 Pixel APK。
 3. 在 LSPosed 中启用 PixelMiPush，并设置以下作用域：
 
@@ -74,9 +74,9 @@ MiPushFramework 0.3.11
 
 [obtainium]: https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2522com.neko7ina.pixelmipush%2522%252C%2522url%2522%253A%2522https%253A%2F%2Fgithub.com%2Fhuaxianyan%2FPixelMiPush%2522%252C%2522author%2522%253A%2522huaxianyan%2522%252C%2522name%2522%253A%2522Pixel%2520MiPush%2522%252C%2522additionalSettings%2522%253A%2522%257B%255C%2522apkFilterRegEx%255C%2522%253A%255C%2522%255EPixelMiPush-universal-.%252A%255C%255C%255C%255C.apk%2524%255C%2522%252C%255C%2522includePrereleases%255C%2522%253Afalse%252C%255C%2522versionDetection%255C%2522%253Atrue%252C%255C%2522appName%255C%2522%253A%255C%2522Pixel%2520MiPush%255C%2522%257D%2522%257D
 
-## MiPushFramework 配置
+## PixelMiPushFramework 配置
 
-通知渠道、MessagingStyle、头像、会话 ID、点击意图和通知分组由 MiPushFramework 配置负责。推荐从 [NihilityT/MiPushConfigurations](https://github.com/NihilityT/MiPushConfigurations) 按需选择配置，不要同时保留标记为互斥的白名单、黑名单或样式文件。
+通知渠道、MessagingStyle、头像、会话 ID、点击意图和通知分组由 PixelMiPushFramework 配置负责。推荐从 [NihilityT/MiPushConfigurations](https://github.com/NihilityT/MiPushConfigurations) 按需选择配置，不要同时保留标记为互斥的白名单、黑名单或样式文件。
 
 QQ 在 Pixel 上推荐启用：
 
@@ -90,9 +90,9 @@ QQ 在 Pixel 上推荐启用：
 ## 使用边界
 
 - Pixel SystemUI 适配依赖 Android 16 的内部实现，系统更新后可能需要重新验证。
-- 模块不会替代 MiPushFramework，也不负责决定 QQ 服务端何时切换到厂商推送。
+- 模块提供环境伪装和跨包通知发布，PixelMiPushFramework 负责共享推送服务。QQ 服务端决定何时切换到厂商推送。
 - 并非所有应用都提供可用的 MiPush 注册和离线推送能力。
-- MiPushFramework、XMSF 和 LSPosed 不应被后台管理工具冻结或限制网络。
+- PixelMiPushFramework、XMSF 和 LSPosed 不应被后台管理工具冻结或限制网络。
 - `master` 是唯一开发主线，仅维护 Pixel 版。通用版和 Legacy 版不再保留开发分支，历史源码通过 `archive/*` 标签及原有 Release 标签查阅。
 
 ## 构建

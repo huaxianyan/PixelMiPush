@@ -87,3 +87,10 @@
 - 已下载替换后的线上 APK 和校验文件，核对资产名称、大小、字节哈希、发布构建信息、正文行数及远端标签提交，均与 CI 产物一致
 - 已安装 code 244 的用户可通过新 APK 覆盖升级。Release 标签和 versionName 保持不变，仅按版本名检测的更新器可能需要手动选择新附件安装，不能承诺自动发现这次替换
 - 本轮未安装或重启设备。targetSdk 37 的实际运行仍需独立验收，框架及 QQ 数据未改动
+
+## STATUS-010：README 配套框架入口修正
+
+- 日期：2026-10-13，用户要求模块配套框架改为我们维护的 PixelMiPushFramework
+- README 的项目说明、环境要求、安装下载及当前功能描述统一指向 `huaxianyan/PixelMiPushFramework`，安装步骤提示通常选择 normal 版本
+- 原版框架 0.3.11 的验证环境明确标为历史记录。保留 NihilityT／fei-ke／yin-ol 的来源与许可证说明，以及 NihilityT 配置仓库链接
+- 本轮只修改文档，不构建、操作设备、移动发布标签或替换 Release 附件
