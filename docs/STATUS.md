@@ -58,3 +58,14 @@
 - 配套框架本轮只提交并推送 README、Obtainium 和后续发布流程改造，不发布新框架 APK
 - 发布顺序：本地说明门禁、合入并推送主分支、等待 CI 成功，再推送注解标签触发正式签名构建。线上附件须核对名称、版本、长期签名与 SHA-256；本条不代表发布已完成
 - 主分支首次 CI 在 SDK 初始化失败：`setup-android@v3` 默认请求已从仓库移除的 `tools` 包。已按该 Action 的正式输入显式选择 `platform-tools`，后续步骤仍安装项目所需平台与 Build Tools，未改变应用工具链
+
+## STATUS-007：v1.0.0 已公开发布
+
+- 日期：2026-10-13，模块修复、README、Obtainium、包名迁移与发布流程均已合入并推送 `master`
+- 修复提交 `705e3ab`，发布准备提交 `5f917bb`，CI 环境修正提交及发布标签目标 `fd0b77e`
+- 主分支 CI [38385940173](https://github.com/huaxianyan/PixelMiPush/actions/runs/38385940173) 成功后推送注解标签 `v1.0.0`，标签发布 CI [38386360285](https://github.com/huaxianyan/PixelMiPush/actions/runs/38386360285) 成功
+- 正式 [v1.0.0 Release](https://github.com/huaxianyan/PixelMiPush/releases/tag/v1.0.0) 已发布，且为 GitHub Latest。附件为 `PixelMiPush-universal-1.0.0.apk` 及同名 `.sha256`，Obtainium 入口已有匹配的正式版附件
+- 已下载线上附件，核对名称、大小、LF 校验文件、SHA-256、包名 `com.neko7ina.pixelmipush`、versionName `1.0.0`、versionCode 244、长期证书与 v2 签名，以及实际构建信息和详细文档链接
+- 正式 APK SHA-256：`6a04a8080f18a6bb8c720c6f3cc4135db3016d05d3b1e058179c82f1eb6b0ceb`
+- 正式版尚未覆盖安装到设备。本轮未执行设备操作，已安装测试包的运行验收见 STATUS-005。正式版可按相同包名与长期签名覆盖测试包
+- 框架配套文档和发布流程改造已推送，未创建新的框架 Release。历史两仓库 Release 与附件保持原样
