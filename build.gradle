@@ -19,26 +19,18 @@ plugins {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
-def getVersionCode = { ->
-    try {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine 'git', 'rev-list', '--first-parent', '--count', 'HEAD'
-            standardOutput = stdout
-        }
-        return Integer.parseInt(stdout.toString().trim())
-    } catch (ignored) {
-        return -1;
-    }
-}
-
 def getConfiguredVersionCode = { ->
     def configuredVersionCode = project.findProperty('versionCode')
-    return configuredVersionCode != null ? Integer.parseInt(configuredVersionCode.toString()) : getVersionCode()
+    // Explicit release counter: commit topology must not lower the installed version.
+    return configuredVersionCode != null ? Integer.parseInt(configuredVersionCode.toString()) : 244
 }
 
 def getVersionName = { ->
-    String versionName  = project.findProperty('versionName') ?: getVersionNameFromGit() ?: "VersionNameError"
+    def configuredVersion = project.findProperty('versionName')
+    if (configuredVersion != null) {
+        return configuredVersion.toString().replaceFirst("^v", "")
+    }
+    String versionName = getVersionNameFromGit() ?: "VersionNameError"
     versionName = increaseVersionForPreRelease(versionName)
     return versionName.replaceFirst("^v", "")
 }
@@ -73,9 +65,8 @@ private String getVersionNameFromGit() {
 ext {
     gitVersionCode = getConfiguredVersionCode()
     gitVersionName = getVersionName()
-    // Pixel API 102 keeps the corrected Pixel edition identity so it can update the frozen
-    // Pixel Legacy release without colliding with the general edition.
-    APPLICATION_ID = "com.neko7ina.mipush.pixel"
+    // Package migration: this edition installs separately from the historical Pixel package.
+    APPLICATION_ID = "com.neko7ina.pixelmipush"
 
     COMPILE_SDK = 34
     MIN_SDK = 26

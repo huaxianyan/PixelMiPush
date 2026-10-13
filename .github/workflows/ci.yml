@@ -23,19 +23,34 @@ permissions:
 
 concurrency:
   group: apk-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ !startsWith(github.ref, 'refs/tags/v') }}
 
 jobs:
   build-release-apk:
     name: Build release APK
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      SIGNER_CERT_SHA256: a73b1a3459fb842f8a39c86ef0fe29e496486361db032085d3345b6b97dd3395
 
     steps:
       - name: Check out source
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Require versioned notes for a new Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 scripts/verify_release_notes.py --tag "$GITHUB_REF_NAME"
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo 'This tag already has a Release. Publish a new version instead of replacing assets.' >&2
+            exit 1
+          fi
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -60,6 +75,10 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
           if [ -z "$SIGNING_KEY" ]; then
+            if [ "$GITHUB_REF_TYPE" = tag ]; then
+              echo 'Release tags require the long-term signing key.' >&2
+              exit 1
+            fi
             echo "No signing secrets configured; using the generated debug key."
             exit 0
           fi
@@ -153,17 +172,39 @@ jobs:
             exit 1
           fi
 
-          signer_output="$("$ANDROID_HOME/build-tools/34.0.0/apksigner" \
-            verify --verbose --print-certs "$apk")"
-          printf '%s\n' "$signer_output"
-          if [ -f release.keystore ]; then
-            grep -Fqi \
-              'Signer #1 certificate SHA-256 digest: a73b1a3459fb842f8a39c86ef0fe29e496486361db032085d3345b6b97dd3395' \
-              <<<"$signer_output" || {
-                echo 'Release APK was not signed with the long-term MiPush certificate.' >&2
-                exit 1
-              }
+          # Tag builds verify signatures once while staging the Release assets.
+          if [ "$GITHUB_REF_TYPE" != tag ]; then
+            signer_output="$("$ANDROID_HOME/build-tools/34.0.0/apksigner" \
+              verify --verbose --print-certs "$apk")"
+            if [ -f release.keystore ]; then
+              grep -Fqi "Signer #1 certificate SHA-256 digest: $SIGNER_CERT_SHA256" <<<"$signer_output"
+            fi
           fi
+
+      - name: Stage Release assets
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          shopt -s nullglob
+          apks=(app/build/outputs/apk/release/*.apk)
+          test "${#apks[@]}" -eq 1
+          python3 scripts/prepare_release.py --tag "$GITHUB_REF_NAME" \
+            --project PixelMiPush --repository "$GITHUB_REPOSITORY" \
+            --certificate "$SIGNER_CERT_SHA256" --tools "$ANDROID_HOME/build-tools/34.0.0" \
+            --apk "default=${apks[0]}"
+
+      - name: Publish Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          release_args=()
+          if [[ "$GITHUB_REF_NAME" == *-* ]]; then release_args+=(--prerelease); fi
+          gh release create "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" --verify-tag \
+            --title "$GITHUB_REF_NAME" "${release_args[@]}" --notes-file build/release/release-notes.md dist/*.apk dist/*.sha256
+
+      - name: Remove decoded signing material
+        if: always()
+        run: rm -f release.keystore local.properties
 
       - name: Name artifact
         id: artifact

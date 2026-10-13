@@ -6,7 +6,7 @@ PixelMiPush 是 [NihilityT/MiPush](https://github.com/NihilityT/MiPush) 的派�
 
 ```text
 应用名称：Pixel MiPush
-包名：com.neko7ina.mipush.pixel
+包名：com.neko7ina.pixelmipush
 ```
 
 ## 主要功能
@@ -58,6 +58,22 @@ MiPushFramework 0.3.11
 
 不要在相同 LSPosed 作用域中同时启用其他 MiPush 模块版本，否则可能产生重复 Hook 和不可预测的通知行为。
 
+### 包名迁移
+
+历史版本（截至 v242）的包名是 `com.neko7ina.mipush.pixel`，后续版本改为 `com.neko7ina.pixelmipush`。新包独立安装，签名相同也不能覆盖旧包，模块私有配置需要重新设置。
+
+迁移时先在 LSPosed 中关闭旧模块，再安装并启用新模块，重新选择作用域，最后按安装步骤重启。确认新模块工作正常后再移除旧包。框架及其配置文件保持原位。
+
+### 通过 Obtainium 安装与更新
+
+先安装 [Obtainium](https://obtainium.imranr.dev/)，再点击下方按钮导入本项目。入口跟踪采用新包名和新产物命名的正式版本。
+
+[<img src="images/obtainium-badge.png" alt="通过 Obtainium 获取 Pixel MiPush" height="48">][obtainium]
+
+模块从 v1.0.0 开始使用独立版本号。历史旧包用户需按上面的步骤手动迁移，迁移后可通过 Obtainium 跟踪后续正式版。
+
+[obtainium]: https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2522com.neko7ina.pixelmipush%2522%252C%2522url%2522%253A%2522https%253A%2F%2Fgithub.com%2Fhuaxianyan%2FPixelMiPush%2522%252C%2522author%2522%253A%2522huaxianyan%2522%252C%2522name%2522%253A%2522Pixel%2520MiPush%2522%252C%2522additionalSettings%2522%253A%2522%257B%255C%2522apkFilterRegEx%255C%2522%253A%255C%2522%255EPixelMiPush-universal-.%252A%255C%255C%255C%255C.apk%2524%255C%2522%252C%255C%2522includePrereleases%255C%2522%253Afalse%252C%255C%2522versionDetection%255C%2522%253Atrue%252C%255C%2522appName%255C%2522%253A%255C%2522Pixel%2520MiPush%255C%2522%257D%2522%257D
+
 ## MiPushFramework 配置
 
 通知渠道、MessagingStyle、头像、会话 ID、点击意图和通知分组由 MiPushFramework 配置负责。推荐从 [NihilityT/MiPushConfigurations](https://github.com/NihilityT/MiPushConfigurations) 按需选择配置，不要同时保留标记为互斥的白名单、黑名单或样式文件。
@@ -83,7 +99,7 @@ QQ 在 Pixel 上推荐启用：
 
 仓库使用 GitHub Actions、JDK 17 和 Android SDK 34 构建 APK。进入 **Actions → Build installable APK → Run workflow**，选择 `master` 分支并按需填写 `version_name` 和 `version_code`。
 
-未配置签名 Secrets 时，工作流使用临时 Debug 签名，不能覆盖正式 Release。正式 Release 使用长期签名，并由 CI 校验包名、Xposed API 102 声明、APK 签名以及 DEX 中不存在 Legacy Xposed API 依赖。
+未配置签名 Secrets 时，工作流使用临时 Debug 签名，不能覆盖正式 Release。正式 Release 使用长期签名，并由 CI 校验包名、Xposed API 102 声明、APK 签名以及 DEX 中不存在 Legacy Xposed API 依赖。标签发布必须配置长期签名，不能使用临时 Debug 密钥。发布流程与产物命名见 [发布约定](docs/RELEASING.md)。
 
 ## 来源与许可证
 

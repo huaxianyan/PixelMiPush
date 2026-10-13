@@ -4,11 +4,12 @@ The `master` branch is the sole development line for the Pixel-specific API 102 
 
 ## Identity and update path
 
-- Package: `com.neko7ina.mipush.pixel`
+- Package for future releases: `com.neko7ina.pixelmipush`
+- Historical package through v242: `com.neko7ina.mipush.pixel`
 - Modern API dependency: `io.github.libxposed:api:102.0.0`
 - Frozen predecessor: tag `archive/legacy-api82-pixel` at `110f396`
 
-A release signed with the repository's long-term certificate can update the corrected Pixel Legacy package in place.
+The new package installs separately even with the same long-term signing certificate. Disable the historical module, install and enable the new module, and reselect its LSPosed scopes. Keep only one MiPush edition enabled. Existing configuration under the old package is not migrated automatically.
 
 ## Recommended scope
 
@@ -48,7 +49,17 @@ For matching QQ MiPush conversation notifications it:
 
 No fallback QQ icon is bundled or enabled. MiPushFramework remains the sole source of the notification `smallIcon`.
 
+## Android 17 notification attribution
+
+Android 17 removed the `NotificationManager.isSystemConditionProviderEnabled` wrapper used by the old readiness check. The module now probes the retained Binder method through the same service used for cross-package notification operations. Android 8.0 and Android 16 wrappers delegate to that same Binder method; this change does not add a new Android version requirement. Lower-version devices have not been retested.
+
+The new package's signed API 102 test build was installed on Android 17. After the user configured scopes and rebooted, the readiness probe returned true and QQ conversation notifications belonged to `com.tencent.mobileqq`. Reposting a historical message exercised this path successfully. This checks notification publishing, not new server delivery or every notification operation.
+
+The independent module release line starts at `v1.0.0`. Its internal versionCode remains monotonic and is maintained in the root build configuration.
+
 ## Validation gates
+
+The checks below describe the historical package. New-package Android 17 validation is recorded above.
 
 - [x] Port the Pixel provider and geometry hooks from Legacy callbacks to API 102 interceptors.
 - [x] Remove Legacy Xposed API references and entry declarations.
