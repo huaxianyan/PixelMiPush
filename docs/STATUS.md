@@ -77,3 +77,13 @@
 - 已核对 Android 17 的官方全部应用及目标版本行为变更。模块本体无 Activity、widget 或原生库，注入代码仍在宿主进程中运行，不能把模块目标提升等同于宿主目标提升
 - 本轮采用显式 workflow_dispatch 构建正式版本参数，成功后更新 `v1.0.0` 的源码标签，按实际 APK 重新生成构建信息及校验文件，替换同名附件。自动标签发布的不覆盖门禁保持不变
 - 旧版附件及发布元数据已留本地备份。此前通知设备验收对应 targetSdk 34，本次 targetSdk 37 尚未运行验收，不能沿用旧验收结论
+
+## STATUS-009：v1.0.0 的 targetSdk 37 附件已替换
+
+- 日期：2026-10-13，修改提交 `f270e66` 已推送主分支。显式版本参数的 CI [38388578498](https://github.com/huaxianyan/PixelMiPush/actions/runs/38388578498) 成功，完成 Release 编译、API 102 元数据、Legacy API 排除、包名及长期签名检查
+- 按本次单独授权，`v1.0.0` 注解标签已通过带旧值校验的强制推送改指向 `f270e66`，同一个 Release 的 APK、同名校验文件和实际构建信息已替换。原版 targetSdk 34／code 244 附件保留本地备份，后续不得再把 STATUS-007 的哈希当作当前发布哈希
+- 当前附件为 `PixelMiPush-universal-1.0.0.apk`，versionName 1.0.0、versionCode 245、minSdk 26、targetSdk 37，长期签名不变。compileSdk 仍为 34
+- 新 APK SHA-256：`164c3d0ed0b8de327c7a7f08baf79c58d2c703ab3e09fbb3ca7443eaf93669d8`
+- 已下载替换后的线上 APK 和校验文件，核对资产名称、大小、字节哈希、发布构建信息、正文行数及远端标签提交，均与 CI 产物一致
+- 已安装 code 244 的用户可通过新 APK 覆盖升级。Release 标签和 versionName 保持不变，仅按版本名检测的更新器可能需要手动选择新附件安装，不能承诺自动发现这次替换
+- 本轮未安装或重启设备。targetSdk 37 的实际运行仍需独立验收，框架及 QQ 数据未改动
