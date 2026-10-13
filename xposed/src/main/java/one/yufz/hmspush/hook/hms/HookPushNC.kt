@@ -6,7 +6,6 @@ import android.app.NotificationChannelGroup
 import android.service.notification.StatusBarNotification
 import one.yufz.hmspush.hook.XLog
 import one.yufz.hmspush.hook.hms.nm.SystemNotificationManager
-import one.yufz.hmspush.hook.system.HookSystemService
 import one.yufz.xposed.findClass
 import one.yufz.xposed.hookMethod
 import one.yufz.xposed.set
@@ -19,7 +18,7 @@ object HookPushNC {
     private const val QQ_PACKAGE_NAME = "com.tencent.mobileqq"
     private const val QQ_MIPUSH_NOTIFICATION_TAG = "mipush_com.tencent.mobileqq"
 
-    private val hookCheck = { HookSystemService.isSystemHookReady }
+    private val hookCheck = { SystemNotificationManager.isSystemHookReady }
 
     fun canHook(classLoader: ClassLoader): Boolean {
         return try {

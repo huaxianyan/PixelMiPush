@@ -7,6 +7,7 @@ import android.service.notification.StatusBarNotification
 import com.huawei.android.app.NotificationManagerEx
 import one.yufz.xposed.ModernHelpers as XposedHelpers
 import one.yufz.hmspush.common.ANDROID_PACKAGE_NAME
+import one.yufz.hmspush.common.IS_SYSTEM_HOOK_READY
 import one.yufz.hmspush.hook.XLog
 import one.yufz.hmspush.hook.modern.ProcessContext
 import one.yufz.xposed.callMethod
@@ -26,6 +27,17 @@ object SystemNotificationManager {
     }
 
     private val notificationManager: Any = NotificationManager::class.java.callStaticMethod("getService")!!
+
+    val isSystemHookReady: Boolean by lazy {
+        try {
+            // Android 17 retains the Binder method but removes the NotificationManager wrapper.
+            (notificationManager.callMethod("isSystemConditionProviderEnabled", IS_SYSTEM_HOOK_READY) as Boolean)
+                .also { XLog.d(TAG, "System notification hook ready: $it") }
+        } catch (t: Throwable) {
+            XLog.e(TAG, "System notification hook readiness check failed", t)
+            false
+        }
+    }
 
     private fun getUid(packageName: String): Int {
         return ProcessContext.require().packageManager.getPackageUid(packageName, 0)

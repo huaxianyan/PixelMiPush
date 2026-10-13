@@ -1,6 +1,5 @@
 package one.yufz.hmspush.hook.system
 
-import android.app.NotificationManager
 import android.content.Context
 import android.os.Binder
 import one.yufz.hmspush.hook.modern.ProcessContext
@@ -14,16 +13,6 @@ import one.yufz.xposed.hookMethod
 class HookSystemService {
     companion object {
         private const val TAG = "HookSystemService"
-
-        val isSystemHookReady: Boolean by lazy {
-            try {
-                val nm = ProcessContext.require().getSystemService(NotificationManager::class.java)
-                nm.callMethod("isSystemConditionProviderEnabled", IS_SYSTEM_HOOK_READY) as Boolean
-            } catch (t: Throwable) {
-                XLog.e(TAG, "isSystemHookReady error", t)
-                false
-            }
-        }
 
     }
 
