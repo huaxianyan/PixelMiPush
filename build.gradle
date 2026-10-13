@@ -22,7 +22,7 @@ task clean(type: Delete) {
 def getConfiguredVersionCode = { ->
     def configuredVersionCode = project.findProperty('versionCode')
     // Explicit release counter: commit topology must not lower the installed version.
-    return configuredVersionCode != null ? Integer.parseInt(configuredVersionCode.toString()) : 244
+    return configuredVersionCode != null ? Integer.parseInt(configuredVersionCode.toString()) : 245
 }
 
 def getVersionName = { ->
@@ -70,5 +70,5 @@ ext {
 
     COMPILE_SDK = 34
     MIN_SDK = 26
-    TARGET_SDK = 34
+    TARGET_SDK = 37
 }

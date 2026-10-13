@@ -57,6 +57,8 @@ The new package's signed API 102 test build was installed on Android 17. After t
 
 The independent module release line starts at `v1.0.0`. Its internal versionCode remains monotonic and is maintained in the root build configuration.
 
+The refreshed `v1.0.0` artifact targets Android 17 (SDK 37) and uses versionCode 245 to update the original code-244 artifact. compileSdk remains 34: no new platform API or toolchain is introduced. The device validation above used targetSdk 34 and does not establish targetSdk 37 runtime compatibility. The module declares no Activity, widget, or native library. Its target change does not change the target SDK of QQ or MiPushFramework processes where hooks run.
+
 ## Validation gates
 
 The checks below describe the historical package. New-package Android 17 validation is recorded above.
