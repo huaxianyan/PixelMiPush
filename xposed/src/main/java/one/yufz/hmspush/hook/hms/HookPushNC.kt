@@ -1,6 +1,8 @@
 package one.yufz.hmspush.hook.hms
 
 import android.app.Notification
+import com.neko7ina.pixelmipush.api.ModuleContract as Api
+import one.yufz.hmspush.hook.modern.ModuleControlRuntime
 import android.app.NotificationChannel
 import android.app.NotificationChannelGroup
 import android.service.notification.StatusBarNotification
@@ -15,8 +17,6 @@ object HookPushNC {
     private const val TAG = "HookPushNC"
 
     private const val TargetClass = "com.nihility.notification.NotificationManagerEx"
-    private const val QQ_PACKAGE_NAME = "com.tencent.mobileqq"
-    private const val QQ_MIPUSH_NOTIFICATION_TAG = "mipush_com.tencent.mobileqq"
 
     private val hookCheck = { SystemNotificationManager.isSystemHookReady }
 
@@ -260,8 +260,9 @@ object HookPushNC {
         tag: String?,
         notification: Notification
     ): Notification {
-        if (packageName != QQ_PACKAGE_NAME ||
-            tag != QQ_MIPUSH_NOTIFICATION_TAG ||
+        if (!ModuleControlRuntime.enabled(Api.QQ_SUMMARY) ||
+            packageName != Api.QQ_PACKAGE ||
+            tag != Api.QQ_NOTIFICATION_TAG ||
             notification.flags and Notification.FLAG_GROUP_SUMMARY == 0
         ) {
             return notification

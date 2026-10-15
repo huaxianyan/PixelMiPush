@@ -1,6 +1,8 @@
 package one.yufz.hmspush.hook.systemui
 
 import android.os.Build
+import com.neko7ina.pixelmipush.api.ModuleContract as Api
+import one.yufz.hmspush.hook.modern.ModuleControlRuntime
 import android.service.notification.StatusBarNotification
 import android.util.TypedValue
 import android.view.View
@@ -11,13 +13,13 @@ import one.yufz.xposed.getField
 import one.yufz.xposed.hookAllMethods
 import one.yufz.xposed.hookMethod
 import java.util.concurrent.atomic.AtomicBoolean
+import java.lang.ref.WeakReference
+import java.util.WeakHashMap
 
 /** Pixel Android 16-specific notification row icon adaptation. */
 class HookPixelSystemUI {
     companion object {
         private const val TAG = "HookPixelSystemUI"
-        private const val QQ_PACKAGE_NAME = "com.tencent.mobileqq"
-        private const val QQ_MIPUSH_NOTIFICATION_TAG = "mipush_com.tencent.mobileqq"
         private const val ICON_TYPE_SMALL_ICON = 0
         private const val REDESIGN_AVATAR_SIZE_DP = 40
         private const val PIXEL_5_AVATAR_SIZE_DP = 48
@@ -26,12 +28,36 @@ class HookPixelSystemUI {
         private const val BADGE_ICON_PADDING_DP = 4
     }
 
+    private val originalLayouts = WeakHashMap<View, List<SavedLayout>>()
+
+    private class SavedLayout(view: View) {
+        private val reference = WeakReference(view)
+        private val width = view.layoutParams.width
+        private val height = view.layoutParams.height
+        private val margins = (view.layoutParams as? ViewGroup.MarginLayoutParams)?.let {
+            intArrayOf(it.leftMargin, it.topMargin, it.rightMargin, it.bottomMargin, it.marginStart, it.marginEnd)
+        }
+
+        fun restore() {
+            val view = reference.get() ?: return
+            view.layoutParams = view.layoutParams.apply {
+                width = this@SavedLayout.width
+                height = this@SavedLayout.height
+                if (this is ViewGroup.MarginLayoutParams && margins != null) {
+                    setMargins(margins[0], margins[1], margins[2], margins[3])
+                    marginStart = margins[4]
+                    marginEnd = margins[5]
+                }
+            }
+        }
+    }
+
     private val loggedQqBadgeOverride = AtomicBoolean(false)
     private val loggedQqGeometryAdjustment = AtomicBoolean(false)
 
-    fun hook(classLoader: ClassLoader) {
-        if (Build.VERSION.SDK_INT < 36) return
-
+    fun hook(classLoader: ClassLoader): Int {
+        if (Build.VERSION.SDK_INT < 36) return 0
+        var installed = 0
         try {
             val providerClass = classLoader.findClass(
                 "com.android.systemui.statusbar.notification.row.icon." +
@@ -40,8 +66,9 @@ class HookPixelSystemUI {
             providerClass.hookMethod("getIconType") {
                 doBefore {
                     val sbn = findStatusBarNotification(thisObject)
-                    if (sbn?.packageName == QQ_PACKAGE_NAME &&
-                        sbn.tag == QQ_MIPUSH_NOTIFICATION_TAG
+                    if (ModuleControlRuntime.enabled(Api.QQ_BADGE) &&
+                        sbn?.packageName == Api.QQ_PACKAGE &&
+                        sbn.tag == Api.QQ_NOTIFICATION_TAG
                     ) {
                         result = ICON_TYPE_SMALL_ICON
                         if (loggedQqBadgeOverride.compareAndSet(false, true)) {
@@ -53,6 +80,7 @@ class HookPixelSystemUI {
                     }
                 }
             }
+            installed = installed or Api.BADGE_INSTALLED
             XLog.d(TAG, "Installed Pixel Android 16 NotificationIconProvider.getIconType hook")
 
             val rowIconClass = classLoader.findClass(
@@ -62,25 +90,30 @@ class HookPixelSystemUI {
                 rowIconClass.hookAllMethods(methodName) {
                     doBefore {
                         val iconView = thisObject as? View ?: return@doBefore
+                        synchronized(originalLayouts) { originalLayouts.remove(iconView) }
+                            ?.forEach { it.restore() }
                         val provider = try {
                             thisObject.getField("mIconProvider", Any::class.java)
                         } catch (_: Throwable) {
                             null
                         } ?: return@doBefore
                         val sbn = findStatusBarNotification(provider)
-                        if (sbn?.packageName == QQ_PACKAGE_NAME &&
-                            sbn.tag == QQ_MIPUSH_NOTIFICATION_TAG
+                        if (ModuleControlRuntime.enabled(Api.QQ_GEOMETRY) &&
+                            sbn?.packageName == Api.QQ_PACKAGE &&
+                            sbn.tag == Api.QQ_NOTIFICATION_TAG
                         ) {
                             adjustConversationIconGeometry(iconView)
                         }
                     }
                 }
             }
+            installed = installed or Api.GEOMETRY_INSTALLED
             XLog.d(TAG, "Installed Pixel Android 16 QQ conversation icon geometry hooks")
         } catch (t: Throwable) {
             // This class is Pixel/SystemUI-build-specific. Never destabilize SystemUI on mismatch.
             XLog.e(TAG, "Unable to install Pixel Android 16 notification icon hook", t)
         }
+        return installed
     }
 
     private fun adjustConversationIconGeometry(iconView: View) {
@@ -102,6 +135,9 @@ class HookPixelSystemUI {
             .filter { it.id == avatarId || it.id == facePileId }
         if (avatars.none { it.layoutParams?.width == redesignAvatarSize }) return
 
+        synchronized(originalLayouts) {
+            originalLayouts[iconView] = (avatars + badge + iconView).map(::SavedLayout)
+        }
         avatars.forEach { avatar ->
             avatar.layoutParams = avatar.layoutParams.apply {
                 width = avatarSize

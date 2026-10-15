@@ -1,5 +1,6 @@
 package one.yufz.hmspush.hook.fakedevice
 
+import com.neko7ina.pixelmipush.api.ModuleContract as Api
 import one.yufz.hmspush.hook.XLog
 import one.yufz.xposed.hookMethod
 
@@ -9,7 +10,7 @@ object FakeDevice {
     private val Default = arrayOf(Common::class.java)
     private val FakeDeviceConfig: Map<String, Array<Class<out IFakeDevice>>> = mapOf(
         "com.coolapk.market" to arrayOf(CoolApk::class.java),
-        "com.tencent.mobileqq" to arrayOf(QQ::class.java),
+        Api.QQ_PACKAGE to arrayOf(QQ::class.java),
         "com.tencent.tim" to arrayOf(QQ::class.java),
         "com.sankuai.meituan" to arrayOf(FakeEmuiOnly::class.java),
         "com.sankuai.meituan.takeoutnew" to arrayOf(FakeEmuiOnly::class.java),

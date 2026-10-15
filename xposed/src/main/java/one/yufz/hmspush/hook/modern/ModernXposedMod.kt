@@ -3,6 +3,8 @@ package one.yufz.hmspush.hook.modern
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import com.neko7ina.pixelmipush.api.ModuleContract as Api
+import one.yufz.hmspush.hook.hms.nm.SystemNotificationManager
 import io.github.libxposed.api.XposedModule
 import io.github.libxposed.api.XposedModuleInterface.ModuleLoadedParam
 import io.github.libxposed.api.XposedModuleInterface.PackageLoadedParam
@@ -31,6 +33,8 @@ class ModernXposedMod : XposedModule() {
 
     private var processName: String = "unknown"
     private var systemServer: Boolean = false
+    private var notificationBridgeInstalled = false
+    private var systemUiHooks = 0
 
     override fun onModuleLoaded(param: ModuleLoadedParam) {
         ModernRuntime.attach(this)
@@ -69,9 +73,10 @@ class ModernXposedMod : XposedModule() {
     }
 
     override fun onPackageReady(param: PackageReadyParam) {
-        if (param.packageName == "com.android.systemui") {
+        if (param.packageName == Api.SYSTEM_UI_PACKAGE) {
             try {
-                HookPixelSystemUI().hook(param.classLoader)
+                systemUiHooks = HookPixelSystemUI().hook(param.classLoader)
+                installApplicationContextCapture()
                 log(Log.INFO, TAG, "Installed Modern API 102 Pixel SystemUI hooks")
             } catch (t: Throwable) {
                 log(Log.ERROR, TAG, "Unable to install Modern API 102 Pixel SystemUI hooks", t)
@@ -80,7 +85,7 @@ class ModernXposedMod : XposedModule() {
         if (param.packageName == HMS_PACKAGE_NAME && processName == HMS_CORE_PROCESS) {
             installApplicationContextCapture()
             try {
-                HookHMS().hook(param.classLoader)
+                notificationBridgeInstalled = HookHMS().hook(param.classLoader)
                 log(Log.INFO, TAG, "Installed Modern API 102 XMSF notification bridge hooks")
             } catch (t: Throwable) {
                 log(Log.ERROR, TAG, "Unable to install Modern API 102 XMSF hooks", t)
@@ -99,13 +104,13 @@ class ModernXposedMod : XposedModule() {
         // treat those package names as ordinary client processes or spoof the whole system process.
         if (systemServer) return false
         if (packageName == "android" ||
-            packageName == "com.android.systemui" ||
+            packageName == Api.SYSTEM_UI_PACKAGE ||
             packageName == "com.google.android.webview" ||
-            packageName == "com.xiaomi.xmsf"
+            packageName == HMS_PACKAGE_NAME
         ) {
             return false
         }
-        if (packageName == "com.tencent.mobileqq" || packageName == "com.tencent.tim") {
+        if (packageName == Api.QQ_PACKAGE || packageName == "com.tencent.tim") {
             return processName == packageName || processName.endsWith(":MSF")
         }
         return true
@@ -114,8 +119,19 @@ class ModernXposedMod : XposedModule() {
     private fun installApplicationContextCapture() {
         Application::class.java.hookMethod("attach", Context::class.java) {
             doAfter {
-                ProcessContext.attach(args[0] as Context)
-                log(Log.DEBUG, TAG, "Captured XMSF application context")
+                val context = args[0] as Context
+                ProcessContext.attach(context)
+                try {
+                    ModuleControlRuntime.attach(context) {
+                        if (context.packageName == HMS_PACKAGE_NAME) {
+                            (if (notificationBridgeInstalled) Api.BRIDGE_INSTALLED else 0) or
+                                (if (SystemNotificationManager.isSystemHookReady) Api.SYSTEM_HOOK_READY else 0)
+                        } else systemUiHooks
+                    }
+                } catch (error: Exception) {
+                    log(Log.ERROR, TAG, "Unable to initialize module controls", error)
+                }
+                log(Log.DEBUG, TAG, "Captured host application context")
             }
         }
     }

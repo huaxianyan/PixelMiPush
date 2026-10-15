@@ -7,10 +7,10 @@ class HookHMS {
         private const val TAG = "HookHMS"
     }
 
-    fun hook(classLoader: ClassLoader) {
-        if (HookPushNC.canHook(classLoader)) {
-            HookPushNC.hook(classLoader)
-        }
+    fun hook(classLoader: ClassLoader): Boolean {
+        if (!HookPushNC.canHook(classLoader)) return false
+        HookPushNC.hook(classLoader)
+        return true
     }
 
 }

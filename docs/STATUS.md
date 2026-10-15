@@ -1,5 +1,9 @@
 # Pixel MiPush 交接
 
+## 当前主线
+
+正式基线仍为 v1.0.0。`feat/module-controls` 正在与 PixelMiPushFramework 联合开发模块状态和 QQ 通知独立开关，源码与构建结果见 STATUS-011。候选尚未发布或装机，不以编译结果代替运行验收。
+
 ## STATUS-001：包名迁移与发布改造
 
 - 日期：2026-10-13，分支 `chore/package-release-standard`
@@ -94,3 +98,12 @@
 - README 的项目说明、环境要求、安装下载及当前功能描述统一指向 `huaxianyan/PixelMiPushFramework`，安装步骤提示通常选择 normal 版本
 - 原版框架 0.3.11 的验证环境明确标为历史记录。保留 NihilityT／fei-ke／yin-ol 的来源与许可证说明，以及 NihilityT 配置仓库链接
 - 本轮只修改文档，不构建、操作设备、移动发布标签或替换 Release 附件
+
+## STATUS-011：模块状态与 QQ 独立设置候选
+
+- 日期：2026-10-15，分支 feat/module-controls，起点 f0305a7。与配套框架联合实现首页状态和「设置 → 模块设置」，QQ 角标、头像布局和汇总简化分别控制，默认开启，基础推送增强保持原样
+- 新增唯一 module-api 协议库、受调用 UID 限制的控制 Provider，以及推送服务和 SystemUI 的存活端点。就绪状态来自实际安装结果和当前系统探测，配置通过修订号确认同步，不依赖历史就绪记录
+- QQ 标识统一引用协议库。关闭头像定制后，在后续视图绑定中恢复原布局，避免复用视图保留定制尺寸。未取得配置时暂停额外 QQ 定制并报告尚未就绪
+- JDK 17 下 :app:assembleRelease -PversionName=module-controls-check 通过，用时 2 分 9 秒，107 项任务。后续常量归并及布局状态同步调整通过 :app:compileReleaseKotlin 离线定向编译，用时 30 秒，没有重复完整构建
+- 详细接口、权限边界及设备验收条件见 [模块控制](MODULE-CONTROL.md)。本轮没有设备安装、重启、发布或签名恢复，正式版本与线上附件保持原样
+- 框架引用本仓库的唯一协议源码，CI 需固定本轮模块提交。后续先推送模块提交，再推送框架；装机及真实通知验收另行授权

@@ -28,16 +28,14 @@ object SystemNotificationManager {
 
     private val notificationManager: Any = NotificationManager::class.java.callStaticMethod("getService")!!
 
-    val isSystemHookReady: Boolean by lazy {
-        try {
-            // Android 17 retains the Binder method but removes the NotificationManager wrapper.
-            (notificationManager.callMethod("isSystemConditionProviderEnabled", IS_SYSTEM_HOOK_READY) as Boolean)
-                .also { XLog.d(TAG, "System notification hook ready: $it") }
+    val isSystemHookReady: Boolean
+        get() = try {
+            // Query the current system process rather than retaining a startup result forever.
+            notificationManager.callMethod("isSystemConditionProviderEnabled", IS_SYSTEM_HOOK_READY) as Boolean
         } catch (t: Throwable) {
             XLog.e(TAG, "System notification hook readiness check failed", t)
             false
         }
-    }
 
     private fun getUid(packageName: String): Int {
         return ProcessContext.require().packageManager.getPackageUid(packageName, 0)

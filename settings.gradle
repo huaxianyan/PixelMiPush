@@ -26,3 +26,4 @@ rootProject.name = "Pixel-MiPush"
 include ':app'
 include ':xposed'
 include ':common'
+include ':module-api'
