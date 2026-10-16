@@ -22,7 +22,7 @@ task clean(type: Delete) {
 def getConfiguredVersionCode = { ->
     def configuredVersionCode = project.findProperty('versionCode')
     // Explicit release counter: commit topology must not lower the installed version.
-    return configuredVersionCode != null ? Integer.parseInt(configuredVersionCode.toString()) : 245
+    return configuredVersionCode != null ? Integer.parseInt(configuredVersionCode.toString()) : 246
 }
 
 def getVersionName = { ->
