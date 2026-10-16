@@ -1,112 +1,88 @@
-# PixelMiPush
+<div align="center">
+  <img src="docs/images/icon.svg" width="120" alt="Pixel MiPush 应用图标">
 
-PixelMiPush 是 [NihilityT/MiPush](https://github.com/NihilityT/MiPush) 的派生项目，需要配合我们维护的 [PixelMiPushFramework](https://github.com/huaxianyan/PixelMiPushFramework) 使用。项目基于 Xposed API 102，为非 MIUI 设备提供目标应用环境伪装和跨包通知发布能力，并针对 Pixel Android 16 的 QQ 会话通知进行适配。
+# Pixel MiPush
 
-当前 Pixel 版身份：
+[![Release](https://img.shields.io/github/v/release/huaxianyan/PixelMiPush)](https://github.com/huaxianyan/PixelMiPush/releases/latest)
+[![Build](https://github.com/huaxianyan/PixelMiPush/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/huaxianyan/PixelMiPush/actions/workflows/ci.yml)
+[![License AGPL-3.0](https://img.shields.io/badge/license-AGPLv3.0-blue.svg)](LICENSE)
 
-```text
-应用名称：Pixel MiPush
-包名：com.neko7ina.pixelmipush
-```
+</div>
 
-## 主要功能
+面向 Pixel 的小米推送增强模块，配合 [Pixel MiPushFramework](https://github.com/huaxianyan/PixelMiPushFramework) 使用，提供设备识别适配、系统通知增强和 QQ 通知定制。
 
-- 使用 Xposed API 102，不依赖 `de.robv.android.xposed` Legacy API
-- 为 PixelMiPushFramework 提供以目标应用身份发布通知的能力
-- 在 Android 16 限制反射写入 `Build.*` 时，继续提供 `SystemProperties` Hook 和 `Unsafe` 后备写入
-- 适配 Pixel Android 16 的 QQ MessagingStyle 会话通知
-- 保留联系人头像、群头像、`Person.icon` 和 `android.largeIcon`
-- 使用 PixelMiPushFramework 提供的单色 `smallIcon` 作为会话头像右下角角标和顶层汇总图标
-- 将 Android 16 的 40 dp 会话头像恢复为 48 dp，并使用 20 dp 角标和 4 dp 角标内边距
-- 修复 QQ 顶层汇总通知重复显示「QQ」的问题，不修改普通子通知的副标题
-- 仅处理 `packageName=com.tencent.mobileqq` 且 `tag=mipush_com.tencent.mobileqq` 的通知；接口不匹配时安全跳过
+框架负责接收消息、记录与通知配置，模块提供需要 LSPosed 的系统和应用增强。模块启用与作用域在 LSPosed 中管理，个性化选项在配套框架中设置。
 
-Pixel 版不包含 MIUI/HyperOS SystemUI 插件代码，也不会内置、替换或自动启用 QQ fallback 图标。通知使用的 `smallIcon` 始终由 PixelMiPushFramework 提供。
+> 社区维护的非官方项目，以 Pixel 的 Android 16 和 Android 17 为主要适配环境。其他系统的通知模板和增强效果需要自行验证。
 
-## 环境要求
+## 特性
 
-- Pixel Android 16
-- 支持 Xposed API 102 的 LSPosed
-- 已完成初始化的 PixelMiPushFramework
-- Root 环境
+- 设备识别适配：在所选应用中提供小米设备相关属性，帮助支持小米推送的应用识别接入环境。
+- 系统通知增强：让框架代发的通知归属到对应应用，便于在系统设置中按应用管理通知。
+- QQ 通知定制：保留联系人和群头像，提供单色通知角标、会话头像布局和汇总副标题清理，三个选项独立控制。
+- 框架内管理：查看模块加载、系统通知增强和设置同步状态，按个性化项目汇总就绪数量，关闭选项不计为故障。
 
-以下为历史版本使用原版 MiPushFramework 时的验证环境，不代表当前发布包的验收结果：
+具体版本的功能和验证范围见 [Release 说明](https://github.com/huaxianyan/PixelMiPush/releases)，通知适配原理见 [技术说明](PIXEL-API102.md)。
 
-```text
-Pixel 10 Pro
-Android 16 / API 36
-LSPosed 2.1.0 / API 102
-QQ 9.1.50
-MiPushFramework 0.3.11
-```
+## 快速开始
 
-## 安装
+### 下载安装
 
-1. 安装并初始化 [PixelMiPushFramework](https://github.com/huaxianyan/PixelMiPushFramework/releases/latest)，通常选择 `normal` 版本。
-2. 从 [Releases](https://github.com/huaxianyan/PixelMiPush/releases/latest) 下载最新的 Pixel APK。
-3. 在 LSPosed 中启用 PixelMiPush，并设置以下作用域：
+需要 Root、支持 Xposed API 102 的 LSPosed，以及已完成初始化的 Pixel MiPushFramework。
+
+**使用历史旧包的用户，先阅读 [旧包迁移](docs/USAGE.md#旧包迁移)。** 同一作用域只启用一个 MiPush 模块版本。
+
+1. 安装并初始化 [Pixel MiPushFramework](https://github.com/huaxianyan/PixelMiPushFramework/releases/latest)，通常选择 `normal` 版本。
+2. 从 [最新正式版](https://github.com/huaxianyan/PixelMiPush/releases/latest) 下载模块 APK，在 LSPosed 中启用 Pixel MiPush。
+3. 选择以下作用域，并按需要加入目标应用：
 
    ```text
    系统框架
    系统界面（com.android.systemui）
    推送服务（com.xiaomi.xmsf）
-   需要设备属性伪装的目标应用
+   需要设备识别适配的目标应用
    ```
 
-4. 重启设备，使 `system_server`、SystemUI 和 XMSF 中的 Hook 完整生效。
-5. 启动目标应用，使其完成 MiPush 注册，再测试真实服务端推送。
+4. 重启设备，使所选作用域加载模块。
+5. 打开目标应用完成小米推送注册，再用一条真实消息检查接收与通知效果。
 
-不要在相同 LSPosed 作用域中同时启用其他 MiPush 模块版本，否则可能产生重复 Hook 和不可预测的通知行为。
+### 通过 Obtainium 更新
 
-### 包名迁移
-
-历史版本（截至 v242）的包名是 `com.neko7ina.mipush.pixel`，后续版本改为 `com.neko7ina.pixelmipush`。新包独立安装，签名相同也不能覆盖旧包，模块私有配置需要重新设置。
-
-迁移时先在 LSPosed 中关闭旧模块，再安装并启用新模块，重新选择作用域，最后按安装步骤重启。确认新模块工作正常后再移除旧包。框架及其配置文件保持原位。
-
-### 通过 Obtainium 安装与更新
-
-先安装 [Obtainium](https://obtainium.imranr.dev/)，再点击下方按钮导入本项目。入口跟踪采用新包名和新产物命名的正式版本。
+先安装 [Obtainium](https://obtainium.imranr.dev/)，再点击下方入口导入更新源。默认跟踪本项目采用新包名的正式版 APK，旧包迁移需先按使用说明完成。
 
 [<img src="images/obtainium-badge.png" alt="通过 Obtainium 获取 Pixel MiPush" height="48">][obtainium]
 
-模块从 v1.0.0 开始使用独立版本号。历史旧包用户需按上面的步骤手动迁移，迁移后可通过 Obtainium 跟踪后续正式版。
+## 使用与配置
+
+在框架的「设置 → 模块设置」中检查运行状态，再从个性化设置分组进入「QQ 通知定制」，按需调整角标、会话头像和汇总通知选项。
+
+通知标题、渠道、分组、点击行为和会话样式由框架规则配置。模块处理对应的设备识别与通知增强，规则选择和 QQ 配置示例见 [使用说明](docs/USAGE.md#通知规则)。
+
+状态就绪表示相关增强已加载、设置已同步。应用是否接入小米推送、服务端何时发送消息，还需结合框架中的注册与消息记录判断。
+
+遇到样式或接收问题时，先检查作用域、重启后的加载状态、框架连接和目标应用注册。系统更新后的通知适配限制见 [兼容与排查](docs/USAGE.md#兼容与排查)。
+
+## 与上游的区别
+
+本项目源自 [NihilityT/MiPush](https://github.com/NihilityT/MiPush)，继续维护 Pixel 所需的设备识别和通知增强，并适配 Xposed API 102、Android 17 通知归属及 Pixel 会话通知模板。
+
+模块与配套框架共享设置协议，支持运行状态检查和 QQ 独立选项。框架管理共享推送服务及用户设置，模块分别在系统和目标应用中提供增强。
+
+包名为 `com.neko7ina.pixelmipush`，使用独立版本线、长期签名和更新源。历史通用版、Legacy 版及旧包的说明与验收结果，按对应标签和技术记录查阅。
+
+## 文档
+
+- [使用与兼容说明](docs/USAGE.md)：旧包迁移、QQ 规则、常见问题和源码构建。
+- [模块状态与个性化设置](docs/MODULE-CONTROL.md)：状态含义、QQ 设置入口与共享协议。
+- [Pixel 通知适配](PIXEL-API102.md)：通知实现、平台适配和历史验证边界。
+- [发布约定](docs/RELEASING.md)：版本、长期签名与正式附件规则。
+- [开发记录](docs/STATUS.md)：功能进度、验证证据与未完成事项。
+- [来源与署名](NOTICE)：上游项目、改编文件及许可证范围。
+
+## 许可证
+
+组合发行版本遵循 [GNU Affero General Public License v3](LICENSE)。继承自 MiPush 和 HMSPush 的代码保留 [GPLv3](LICENSE.MiPush-GPL-3.0) 声明，设备属性适配中的 MiPushFaker 改编代码保留 [AGPLv3](LICENSE.MiPushFaker-AGPL-3.0) 声明。
+
+原项目来源、版权与授权范围见 [NOTICE](NOTICE)。本项目独立维护，与上游作者不存在背书关系。
 
 [obtainium]: https://apps.obtainium.imranr.dev/redirect?r=obtainium%3A%2F%2Fapp%2F%257B%2522id%2522%253A%2522com.neko7ina.pixelmipush%2522%252C%2522url%2522%253A%2522https%253A%2F%2Fgithub.com%2Fhuaxianyan%2FPixelMiPush%2522%252C%2522author%2522%253A%2522huaxianyan%2522%252C%2522name%2522%253A%2522Pixel%2520MiPush%2522%252C%2522additionalSettings%2522%253A%2522%257B%255C%2522apkFilterRegEx%255C%2522%253A%255C%2522%255EPixelMiPush-universal-.%252A%255C%255C%255C%255C.apk%2524%255C%2522%252C%255C%2522includePrereleases%255C%2522%253Afalse%252C%255C%2522versionDetection%255C%2522%253Atrue%252C%255C%2522appName%255C%2522%253A%255C%2522Pixel%2520MiPush%255C%2522%257D%2522%257D
-
-## PixelMiPushFramework 配置
-
-通知渠道、MessagingStyle、头像、会话 ID、点击意图和通知分组由 PixelMiPushFramework 配置负责。推荐从 [NihilityT/MiPushConfigurations](https://github.com/NihilityT/MiPushConfigurations) 按需选择配置，不要同时保留标记为互斥的白名单、黑名单或样式文件。
-
-QQ 在 Pixel 上推荐启用：
-
-- `com.tencent.mobileqq_QQ.json`
-- `com.tencent.mobileqq_QQ_MessagingStyle.json`
-- `com.tencent.mobileqq_QQ_意图重整.json`
-- `2_后置配置_直接打开意图-白名单.json`，并将 `com.tencent.mobileqq` 加入白名单
-
-「直接打开意图」会让新通知使用 Activity PendingIntent，可避免通过 XMSF Service 间接打开 QQ 时触发 SystemUI 启动动画超时。配置变更只影响之后创建的新通知。
-
-## 使用边界
-
-- Pixel SystemUI 适配依赖 Android 16 的内部实现，系统更新后可能需要重新验证。
-- 模块提供环境伪装和跨包通知发布，PixelMiPushFramework 负责共享推送服务。QQ 服务端决定何时切换到厂商推送。
-- 并非所有应用都提供可用的 MiPush 注册和离线推送能力。
-- PixelMiPushFramework、XMSF 和 LSPosed 不应被后台管理工具冻结或限制网络。
-- `master` 是唯一开发主线，仅维护 Pixel 版。通用版和 Legacy 版不再保留开发分支，历史源码通过 `archive/*` 标签及原有 Release 标签查阅。
-
-## 构建
-
-仓库使用 GitHub Actions、JDK 17 和 Android SDK 34 构建 APK。进入 **Actions → Build installable APK → Run workflow**，选择 `master` 分支并按需填写 `version_name` 和 `version_code`。
-
-未配置签名 Secrets 时，工作流使用临时 Debug 签名，不能覆盖正式 Release。正式 Release 使用长期签名，并由 CI 校验包名、Xposed API 102 声明、APK 签名以及 DEX 中不存在 Legacy Xposed API 依赖。标签发布必须配置长期签名，不能使用临时 Debug 密钥。发布流程与产物命名见 [发布约定](docs/RELEASING.md)。
-
-## 来源与许可证
-
-本项目 Fork 自 [NihilityT/MiPush](https://github.com/NihilityT/MiPush)，原项目又派生自 [fei-ke/HMSPush](https://github.com/fei-ke/HMSPush)。这些代码继续保留 [GNU General Public License v3](LICENSE.MiPush-GPL-3.0) 的版权和授权声明。
-
-设备属性伪装中的部分 `android.os.SystemProperties` Hook 和 MIUI 属性值改编自 [yin-ol/MiPushFaker](https://github.com/yin-ol/MiPushFaker)，对应代码遵循 [GNU Affero General Public License v3](LICENSE.MiPushFaker-AGPL-3.0)。
-
-组合发行版本遵循仓库根目录中的 [GNU AGPL v3](LICENSE)。原有 GPLv3 代码继续保留其许可证、版权和来源说明，并依据 GPLv3 第 13 节与 AGPLv3 代码组合分发。详细来源、文件范围和署名参见 [NOTICE](NOTICE)。
-
-本项目与上述上游作者不存在背书关系。
