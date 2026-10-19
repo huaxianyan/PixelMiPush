@@ -70,7 +70,7 @@
 - 日期：2026-10-13，模块修复、README、Obtainium、包名迁移与发布流程均已合入并推送 `master`
 - 修复提交 `705e3ab`，发布准备提交 `5f917bb`，CI 环境修正提交及发布标签目标 `fd0b77e`
 - 主分支 CI [38385940173](https://github.com/huaxianyan/PixelMiPush/actions/runs/38385940173) 成功后推送注解标签 `v1.0.0`，标签发布 CI [38386360285](https://github.com/huaxianyan/PixelMiPush/actions/runs/38386360285) 成功
-- 正式 [v1.0.0 Release](https://github.com/huaxianyan/PixelMiPush/releases/tag/v1.0.0) 已发布，且为 GitHub Latest。附件为 `PixelMiPush-universal-1.0.0.apk` 及同名 `.sha256`，Obtainium 入口已有匹配的正式版附件
+- 正式 [v1.0.0 Release](https://github.com/huaxianyan/PixelMiPush/releases/tag/v1.0.0) 已发布，且为 GitHub Latest。附件为 `PixelMiPush-1.0.0.apk` 及同名 `.sha256`，Obtainium 入口已有匹配的正式版附件
 - 已下载线上附件，核对名称、大小、LF 校验文件、SHA-256、包名 `com.neko7ina.pixelmipush`、versionName `1.0.0`、versionCode 244、长期证书与 v2 签名，以及实际构建信息和详细文档链接
 - 正式 APK SHA-256：`6a04a8080f18a6bb8c720c6f3cc4135db3016d05d3b1e058179c82f1eb6b0ceb`
 - 正式版尚未覆盖安装到设备。本轮未执行设备操作，已安装测试包的运行验收见 STATUS-005。正式版可按相同包名与长期签名覆盖测试包
@@ -88,7 +88,7 @@
 
 - 日期：2026-10-13，修改提交 `f270e66` 已推送主分支。显式版本参数的 CI [38388578498](https://github.com/huaxianyan/PixelMiPush/actions/runs/38388578498) 成功，完成 Release 编译、API 102 元数据、Legacy API 排除、包名及长期签名检查
 - 按本次单独授权，`v1.0.0` 注解标签已通过带旧值校验的强制推送改指向 `f270e66`，同一个 Release 的 APK、同名校验文件和实际构建信息已替换。原版 targetSdk 34／code 244 附件保留本地备份，后续不得再把 STATUS-007 的哈希当作当前发布哈希
-- 当前附件为 `PixelMiPush-universal-1.0.0.apk`，versionName 1.0.0、versionCode 245、minSdk 26、targetSdk 37，长期签名不变。compileSdk 仍为 34
+- 当前附件为 `PixelMiPush-1.0.0.apk`，versionName 1.0.0、versionCode 245、minSdk 26、targetSdk 37，长期签名不变。compileSdk 仍为 34
 - 新 APK SHA-256：`164c3d0ed0b8de327c7a7f08baf79c58d2c703ab3e09fbb3ca7443eaf93669d8`
 - 已下载替换后的线上 APK 和校验文件，核对资产名称、大小、字节哈希、发布构建信息、正文行数及远端标签提交，均与 CI 产物一致
 - 已安装 code 244 的用户可通过新 APK 覆盖升级。Release 标签和 versionName 保持不变，仅按版本名检测的更新器可能需要手动选择新附件安装，不能承诺自动发现这次替换
@@ -124,7 +124,7 @@
 - 注解标签 v1.1.0 固定源码 98d3daa0096773d10c0a0bc35f7a6ed5dd2d065f，已正式发布并确认为 Latest，框架 v1.2.0 同步完成发布
 - [主线 CI 38896143459](https://github.com/huaxianyan/PixelMiPush/actions/runs/38896143459) 和 [发布 CI 38897496302](https://github.com/huaxianyan/PixelMiPush/actions/runs/38897496302) 均成功，没有重复触发已通过构建
 - 从正式 Release 下载 APK 和同名 SHA-256 文件，复用既有校验脚本核对包名 com.neko7ina.pixelmipush、版本号 1.1.0、版本码 246、非调试标记、长期证书及 v2 签名，通过。线上构建信息与实际附件一致
-- APK 为 PixelMiPush-universal-1.1.0.apk，大小 121844 字节，SHA-256 为 3a03bf520cb9332e81413cab82986ac131a2e2e365b4142e8075c3a6dbb654bd，与校验文件和 GitHub 资产摘要相同
+- APK 为 PixelMiPush-1.1.0.apk，大小 121844 字节，SHA-256 为 3a03bf520cb9332e81413cab82986ac131a2e2e365b4142e8075c3a6dbb654bd，与校验文件和 GitHub 资产摘要相同
 - 历史 Release 正文均无须修订，旧附件标识、名称、大小与摘要保持原样。本轮没有安装、清数据或重启设备，不将既有本地测试结果冒充正式 APK 的新运行验收
 
 ## STATUS-014：模块 README 按框架门面结构重写

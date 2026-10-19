@@ -38,10 +38,10 @@ versionCode 默认值在根 `build.gradle` 显式维护，每次正式发布递�
 
 ## 产物
 
-- `PixelMiPush-universal-<版本>.apk`
+- `PixelMiPush-<版本>.apk`
 - 同名 `.apk.sha256`，使用 `sha256sum -c` 可读的 LF 文本格式
 
-当前没有原生库，使用 `universal`。构建信息包含版本、versionCode、包名、架构、min／target SDK、签名证书、源码提交和 APK SHA-256。
+当前没有原生库，也没有限定架构，文件名因此不带架构段；构建信息里的架构一格写 `无原生库`。构建信息包含版本、versionCode、包名、架构、min／target SDK、签名证书、源码提交和 APK SHA-256。
 
 发布门禁保留 API 102 元数据、Legacy API 检查和包名检查，标签构建必须使用现有长期密钥。`prepare_release.py` 验证实际 APK 的长期证书与 v2 签名、标签与检出提交、versionName 和详细文档，再命名附件。
 
